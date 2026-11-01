@@ -27,20 +27,23 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy to EC2') {
-            steps {
-                sshagent(credentials: ['ec2-creds']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-18-222-147-221.us-east-2.compute.amazonaws.com "
-                            docker pull lateeshawilliams/hello:latest &&
-                            docker stop hello || true &&
-                            docker rm hello || true &&
-                            docker run -d --name hello -p 8080:8080 lateeshawilliams/hello:latest
-                        "
-                    '''
-                }
-            }
+stage('Deploy to EC2') {
+    steps {
+        withCredentials([sshUserPrivateKey(
+            credentialsId: 'ec2-creds',
+            keyFileVariable: 'SSH_KEY',
+            usernameVariable: 'SSH_USER'
+        )]) {
+            sh '''
+                ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SSH_USER"@ec2-18-222-147-221.us-east-2.compute.amazonaws.com "
+                    docker pull lateeshawilliams/hello:latest &&
+                    docker stop hello || true &&
+                    docker rm hello || true &&
+                    docker run -d --name hello -p 8080:8080 lateeshawilliams/hello:latest
+                "
+            '''
         }
+    }
+}
     }
 }
