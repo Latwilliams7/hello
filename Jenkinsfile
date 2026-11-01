@@ -34,15 +34,14 @@ stage('Deploy to EC2') {
             keyFileVariable: 'SSH_KEY',
             usernameVariable: 'SSH_USER'
         )]) {
-            sh '''
-            sudo docker pull lateeshawilliams/hello:latest &&
-            sudo docker stop hello || true &&
-            sudo docker rm hello || true &&
-            sudo docker run -d --name hello -p 8080:8080 lateeshawilliams/hello:latest
+             sh '''
+                ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SSH_USER"@ec2-18-222-147-221.us-east-2.compute.amazonaws.com "
+                    docker pull lateeshawilliams/hello:latest &&
+                    docker stop hello || true &&
+                    docker rm hello || true &&
+                    docker run -d --name hello -p 8080:8080 lateeshawilliams/hello:latest
                 "
             '''
         }
-    }
-}
     }
 }
