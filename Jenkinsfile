@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+    PATH = "/Users/lateeshawilliams/.docker/bin:${env.PATH}"
+}
+
     stages {
         stage('Build Docker Image') {
             steps {
