@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t hello .'
+              sh 'docker build --platform linux/amd64 -t hello .'
             }
         }
 
